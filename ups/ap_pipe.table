@@ -5,15 +5,7 @@
 # included by low-level LSST packages such as utils or daf_base.
 # Any other package whose interface is used should be listed explicitly
 # rather than assuming it will be included recursively.
-setupRequired(utils)
-setupRequired(pex_config)
-setupRequired(pipe_base)
-setupRequired(pipe_tasks)
-
 setupRequired(ap_association)
-
-setupOptional(ap_pipe_testdata)
-setupOptional(obs_decam)
 
 envPrepend(PYTHONPATH, ${PRODUCT_DIR}/python)
 envPrepend(PATH, ${PRODUCT_DIR}/bin)
