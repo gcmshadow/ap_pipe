@@ -25,6 +25,9 @@ __all__ = [
 ]
 
 
+import astropy.units as u
+
+from lsst.verify import Measurement
 from lsst.pipe.tasks.insertFakes import InsertFakesConfig
 from lsst.verify.tasks import MetricTask, MetricConfig, MetricConnections, \
     MetricComputationError
@@ -77,9 +80,16 @@ class ApFakesCompletenessMetricTask(MetricTask):
     _DefaultName = "apFakesCompleteness"
     ConfigClass = ApFakesCompletenessMetricConfig
 
-    def run(self, matchedFakes):
+    def runQuantum(self, butlerQC, inputRefs, outputRefs):
+        inputs = butlerQC.get(inputRefs)
+        inputs["band"] = butlerQC.quantum.dataId["band"]
+
+        outputs = self.run(**inputs)
+        butlerQC.put(outputs, outputRefs)
+
+    def run(self, matchedFakes, band):
         """Compute the completeness of recovered fakes within a magnitude
-        range..
+        range.
 
         Parameters
         ----------
@@ -95,10 +105,9 @@ class ApFakesCompletenessMetricTask(MetricTask):
                 the ratio (`lsst.verify.Measurement` or `None`)
         """
         if matchedFakes is not None:
-            filterName = matchedFakes["filterName"][matchedFakes["diaSourceId"] > 0].unique()[0]
             metricName = \
-                f"{self.config.metricName}{filterName}{self.config.magMin:.1f}t{self.config.magMin:.1f}"
-            magnitudes = mmatchedFakes[f"{filterName}{self.config.magVar}"]
+                f"{self.config.metricName}{band}{self.config.magMin:.1f}t{self.config.magMin:.1f}"
+            magnitudes = mmatchedFakes[f"{band}{self.config.magVar}"]
             magCutFakes = matchedFakes[np.logical_and(magnitudes > self.config.magMin,
                                                       magnitudes < self.config.magMax)]
             if len(magCutFakes) <= 0.0:
