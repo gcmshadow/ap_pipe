@@ -45,7 +45,7 @@ class ApFakesCompletenessMetricConnections(
                           "metric": "apFakesCompleteness"}):
     """
     """
-    matchedFakes = connType.Input(
+    matchedFakes = connTypes.Input(
         doc="Fakes matched to their detections in the difference image.",
         name="{fakesType}{CoaddName}Diff_matchDiaSrc",
         storageClass="DataFrame",
