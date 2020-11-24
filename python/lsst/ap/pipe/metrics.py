@@ -26,11 +26,14 @@ __all__ = [
 
 
 import astropy.units as u
+import numpy as np
 
-from lsst.verify import Measurement
+import lsst.pex.config as pexConfig
+from lsst.pipe.base import Struct
+import lsst.pipe.base.connectionTypes as connTypes
 from lsst.pipe.tasks.insertFakes import InsertFakesConfig
-from lsst.verify.tasks import MetricTask, MetricConfig, MetricConnections, \
-    MetricComputationError
+from lsst.verify import Measurement
+from lsst.verify.tasks import MetricTask, MetricComputationError
 
 
 class ApFakesCompletenessMetricConnections(
@@ -42,7 +45,7 @@ class ApFakesCompletenessMetricConnections(
                           "metric": "apFakesCompleteness"}):
     """
     """
-    matchedFakes = connectionTypes.Input(
+    matchedFakes = connType.Input(
         doc="Fakes matched to their detections in the difference image.",
         name="{fakesType}{CoaddName}Diff_matchDiaSrc",
         storageClass="DataFrame",
@@ -107,7 +110,7 @@ class ApFakesCompletenessMetricTask(MetricTask):
         if matchedFakes is not None:
             metricName = \
                 f"{self.config.metricName}{band}{self.config.magMin:.1f}t{self.config.magMin:.1f}"
-            magnitudes = mmatchedFakes[f"{band}{self.config.magVar}"]
+            magnitudes = matchedFakes[f"{band}{self.config.magVar}"]
             magCutFakes = matchedFakes[np.logical_and(magnitudes > self.config.magMin,
                                                       magnitudes < self.config.magMax)]
             if len(magCutFakes) <= 0.0:
