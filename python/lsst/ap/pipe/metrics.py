@@ -47,7 +47,7 @@ class ApFakesCompletenessMetricConnections(
     """
     matchedFakes = connTypes.Input(
         doc="Fakes matched to their detections in the difference image.",
-        name="{fakesType}{CoaddName}Diff_matchDiaSrc",
+        name="{fakesType}{coaddName}Diff_matchDiaSrc",
         storageClass="DataFrame",
         dimensions=("instrument", "visit", "detector"),
     )
@@ -109,8 +109,8 @@ class ApFakesCompletenessMetricTask(MetricTask):
         """
         if matchedFakes is not None:
             metricName = \
-                f"{self.config.metricName}{band}{self.config.magMin:.1f}t{self.config.magMin:.1f}"
-            magnitudes = matchedFakes[f"{band}{self.config.magVar}"]
+                f"{self.config.metricName}"
+            magnitudes = matchedFakes[f"{self.config.magVar}" % band]
             magCutFakes = matchedFakes[np.logical_and(magnitudes > self.config.magMin,
                                                       magnitudes < self.config.magMax)]
             if len(magCutFakes) <= 0.0:
